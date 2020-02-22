@@ -51,7 +51,7 @@ public class SimulatorView extends JFrame {
 		stats = new FieldStats();
 		colors = new LinkedHashMap<>();
 
-		setTitle("Fox and Rabbit Simulation");
+		setTitle("Mystical Land Simulation");
 		stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
 		timeLabel = new JLabel(DAY_PREFIX + TIME_PREFIX, JLabel.CENTER);
 		weatherLabel = new JLabel(WEATHER_PREFIX + RAINING_PREFIX, JLabel.CENTER);

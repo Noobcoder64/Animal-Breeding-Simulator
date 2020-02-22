@@ -69,7 +69,7 @@ public abstract class LivingThing extends Entity {
 	 * @param newAnimals A list to return newly added living things
 	 */
 	protected void reproduce(List<LivingThing> newLivingThings) {
-		// New foxes are born into adjacent locations.
+		// New Living Things are born into adjacent locations.
 		// Get a list of adjacent free locations.
 		Field field = getField();
 		List<Location> free = field.getFreeAdjacentLocations(getLocation());

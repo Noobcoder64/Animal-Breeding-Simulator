@@ -118,7 +118,7 @@ public abstract class Animal extends LivingThing {
 	 * @param field
 	 *            The field currently occupied.
 	 * @param newAnimals
-	 *            A list to return newly born foxes.
+	 *            A list to return newly born Animals
 	 */
 	@Override
 	public void act(TimeOfDay timeOfDay, Weather weather, List<LivingThing> newAnimals) {
