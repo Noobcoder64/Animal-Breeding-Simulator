@@ -1,17 +1,14 @@
 package environment.livingthings.animals;
 
-import java.util.List;
-import java.util.Random;
 
-import environment.livingthings.Food;
-import environment.livingthings.LivingThing;
-import environment.livingthings.animals.components.Gender;
+
+
+
 import environment.livingthings.animals.properties.Herbivore;
 import environment.livingthings.animals.properties.Prey;
 import environment.livingthings.plants.Plant;
 import environment.time.TimeOfDay;
 import environment.weather.Weather;
-import simulator.Randomizer;
 import simulator.field.Field;
 import simulator.field.entity.Location;
 
@@ -40,8 +37,7 @@ public class Unicorn extends Animal implements Prey, Herbivore {
 	// The food value of a unicorn when eaten.
 	public static final int FOOD_VALUE = 10;
 
-	// A shared random number generator to control breeding.
-	private static final Random rand = Randomizer.getRandom();
+
 
 	// The food sources of a unicorn.
 	private static final Class[] foodSources = { Plant.class };

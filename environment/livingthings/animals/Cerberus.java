@@ -1,14 +1,14 @@
 package environment.livingthings.animals;
 
 import java.util.List;
-import java.util.Random;
+
 
 import environment.livingthings.Food;
 import environment.livingthings.LivingThing;
 import environment.livingthings.animals.properties.Predator;
 import environment.time.TimeOfDay;
 import environment.weather.Weather;
-import simulator.Randomizer;
+
 import simulator.field.Field;
 import simulator.field.entity.Location;
 
@@ -38,8 +38,6 @@ public class Cerberus extends Animal implements Predator {
 	// The strength value of a cerberus (used when competing with other predators).
 	private static final int STRENGTH = 10;
 
-	// A shared random number generator to control breeding.
-	private static final Random rand = Randomizer.getRandom();
 
 	// The food sources of a cerberus.
 	private static final Class[] foodSources = { Phoenix.class };
