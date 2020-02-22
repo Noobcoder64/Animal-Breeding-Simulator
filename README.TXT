@@ -1,5 +1,5 @@
 Project: foxes-and-rabbits-v2
-Authors: Michael Kölling and David J. Barnes
+Authors: Fahim Ahmed (k1921959), Amit Setty (k1923164), Michael Kölling and David J. Barnes
 
 This project is part of the material for chapter 10 of the book
 
