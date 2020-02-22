@@ -89,7 +89,7 @@ public abstract class LivingThing extends Entity {
 	private int breed() {
 		int births = 0;
 		if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-			births = rand.nextInt(getMaxLitterSize()) + 1;
+			births = rand.nextInt(getMaxLitterSize()) + 1; 
 		}
 		return births;
 	}

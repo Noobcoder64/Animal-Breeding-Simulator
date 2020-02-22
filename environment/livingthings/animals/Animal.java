@@ -28,7 +28,7 @@ public abstract class Animal extends LivingThing {
 
 	// The animal's age.
 	protected int age;
-	// The animal's food level, which is increased by eating rabbits.
+	// The animal's food level, which is increased by eating 
 	protected int foodLevel;
 
 	// The animal's gender.

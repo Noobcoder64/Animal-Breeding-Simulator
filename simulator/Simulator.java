@@ -104,7 +104,7 @@ public class Simulator {
 
     /**
      * Run the simulation from its current state for a single step. Iterate over the
-     * whole field updating the state of each fox and rabbit.
+     * whole field updating the state of each animal
      */
     public void simulateOneStep() {
         step++;
@@ -115,7 +115,7 @@ public class Simulator {
         List<LivingThing> livingThings = environment.getLivingThings();
         List<LivingThing> newLivingThings = new ArrayList<>();
 
-        // Let all rabbits act.
+        
         for (Iterator<LivingThing> it = livingThings.iterator(); it.hasNext();) {
             LivingThing livingThing = it.next();
             livingThing.act(environment.getTime().getTimeOfDay(), environment.getWeather(), newLivingThings);
@@ -124,7 +124,7 @@ public class Simulator {
             }
         }
 
-        // Add the newly born foxes and rabbits to the main lists.
+        // Add the newly born animals to the main lists.
         livingThings.addAll(newLivingThings);
 
         view.showStatus(step, environment.getTime(), environment.getWeather(), field);
