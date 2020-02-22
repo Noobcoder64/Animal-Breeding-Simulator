@@ -1,10 +1,13 @@
 package environment.livingthings.animals;
 
+import java.util.Random;
 
+import environment.livingthings.animals.components.Gender;
 import environment.livingthings.animals.properties.Prey;
 import environment.livingthings.plants.Plant;
 import environment.time.TimeOfDay;
 import environment.weather.Weather;
+import simulator.Randomizer;
 import simulator.field.Field;
 import simulator.field.entity.Location;
 
@@ -33,6 +36,8 @@ public class Phoenix extends Animal implements Prey {
 	// The food value of a phoenix when eaten.
 	public static final int FOOD_VALUE = 9;
 
+	// A shared random number generator to control breeding.
+	private static final Random rand = Randomizer.getRandom();
 
 	// The food sources of a phoenix.
 	private static final Class[] foodSources = { Plant.class };
@@ -105,8 +110,11 @@ public class Phoenix extends Animal implements Prey {
 		return INITIAL_FOOD_LEVEL;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean canMove(TimeOfDay timeOfDay, Weather weather) {
-		return timeOfDay!=TimeOfDay.NIGHT;
+	public void getEaten() {
+		setDead();
 	}
 }

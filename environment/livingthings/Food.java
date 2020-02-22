@@ -15,23 +15,23 @@ import simulator.field.entity.Location;
 public interface Food {
 
 	/**
-	 * Code for when Food is eaten
+	 * Code for when Food is eaten.
 	 */
-	default void getEaten() {
-		this.setDead();
-	}
+	void getEaten();
 
 	/**
+	 * Return the food's nutrition value.
 	 * 
 	 * @return food value - describes the nutrition of food (how much it fills up
-	 *         the thing that eats it)
+	 *         the animal that eats it).
 	 */
 	int getFoodValue();
 
 	/**
-	 * @return the location of the food
+	 * Return the food's location.
+	 * 
+	 * @return the location of the food.
 	 */
 	Location getLocation();
 
-	void setDead();
 }

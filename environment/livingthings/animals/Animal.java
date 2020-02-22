@@ -1,4 +1,6 @@
 package environment.livingthings.animals;
+
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -8,6 +10,7 @@ import environment.livingthings.Food;
 import environment.livingthings.LivingThing;
 import environment.livingthings.animals.components.Gender;
 import environment.livingthings.animals.components.diseases.Disease;
+import environment.livingthings.animals.properties.Predator;
 import environment.time.TimeOfDay;
 import environment.weather.Weather;
 import simulator.field.Field;
@@ -15,12 +18,12 @@ import simulator.field.entity.Entity;
 import simulator.field.entity.Location;
 
 /**
- * A class representing shared characteristics of animals.
- * Animal extends LivingThing 
- * Animals breed, age, move, eat, act, get diseases, and die. 
- * Some animals are impacted by the weather when they act
+ * A class representing shared characteristics of animals. Animal extends
+ * LivingThing Animals breed, age, move, eat, act, get diseases, and die. Some
+ * animals are impacted by the weather when they act
  * 
- * @author Fahim Ahmed (k1921959), Amit Setty (k1923164), David J. Barnes and Michael Kölling
+ * @author Fahim Ahmed (k1921959), Amit Setty (k1923164), David J. Barnes and
+ *         Michael Kölling
  * @version 2019.02.20
  */
 public abstract class Animal extends LivingThing {
@@ -28,7 +31,7 @@ public abstract class Animal extends LivingThing {
 
 	// The animal's age.
 	protected int age;
-	// The animal's food level, which is increased by eating 
+	// The animal's food level, which is increased by eating rabbits.
 	protected int foodLevel;
 
 	// The animal's gender.
@@ -38,8 +41,8 @@ public abstract class Animal extends LivingThing {
 	protected Set<Disease> diseases;
 
 	/**
-	 * Create a new animal at location in field. An animal may be created with age zero (a new born) or
-	 * with a random age. An animal may be Male or Female.
+	 * Create a new animal at location in field. An animal may be created with age
+	 * zero (a new born) or with a random age. An animal may be Male or Female.
 	 * 
 	 * @param randomAge
 	 *            Determine whether the animal has a random age.
@@ -58,51 +61,11 @@ public abstract class Animal extends LivingThing {
 		}
 
 		foodLevel = getInitialFoodLevel();
-		
+
 		// Determine whether the animal will be a MALE or a FEMALE.
 		gender = rand.nextBoolean() ? Gender.MALE : Gender.FEMALE;
 
 		diseases = new HashSet<>();
-	}
-
-
-	/**
-	 * Return the gender of an animal.
-	 * 
-	 * @return the gender of an animal.
-	 */
-	public Gender getGender() {
-		return gender;
-	}
-
-	/**
-	 * Create a new animal at location in field.
-	 * 
-	 * @param randomAge
-	 *            Determine whether the animal has a random age.
-	 * @param field
-	 *            The field currently occupied.
-	 * @param location
-	 *            The location within the field.
-	 */
-	abstract Animal createAnimal(boolean randomAge, Field field, Location location);
-
-	/**
-	 * Create a new animal at location in field and infect the offspring if the
-	 * disease is spreadable.
-	 * 
-	 * @param location
-	 *            The location within the field.
-	 */
-	@Override
-	protected LivingThing createOffSpring(Location location) {
-		Animal animal = createAnimal(false, field, location);
-		diseases.forEach(disease -> {
-			if (disease.affectsOffSpring()) {
-				animal.getInfected(disease);
-			}
-		});
-		return animal;
 	}
 
 	/**
@@ -118,49 +81,30 @@ public abstract class Animal extends LivingThing {
 	 * @param field
 	 *            The field currently occupied.
 	 * @param newAnimals
-	 *            A list to return newly born Animals
+	 *            A list to return newly born foxes.
 	 */
 	@Override
 	public void act(TimeOfDay timeOfDay, Weather weather, List<LivingThing> newAnimals) {
-		/*
-		 * Increment Age Increment Hunger Reproduce Find Food Eat Food Move
-		 */
-
-		spreadDiseases();
-		applyDiseases();
 		incrementAge();
 		incrementHunger();
-
+		applyDiseases();
+		
 		if (!isAlive())
 			return;
+		
+		spreadDiseases();
+
+		
 
 		Location newLocation = null;
 
 		reproduce(newAnimals);
 
-		Food food = findFood();
+		findFood();
 
-		if (!(food == null))
-			newLocation = food.getLocation();
-		// Move towards a source of food if found.
 		if (canMove(timeOfDay, weather)) {
 			move(newLocation);
 		}
-	}
-
-	/**
-	 * Return whether an animal can move when acting.
-	 * 
-	 * @param timeOfDay
-	 *            The current time of the day.
-	 * @param weather
-	 *            The current weather conditions.
-	 * 
-	 * @return true if an animal can move.
-	 */
-
-	public boolean canMove(TimeOfDay timeOfDay, Weather weather) {
-		return true;
 	}
 
 	/**
@@ -185,13 +129,6 @@ public abstract class Animal extends LivingThing {
 	}
 
 	/**
-	 * Return the breeding age of an animal.
-	 * 
-	 * @return the breeding age of an animal.
-	 */
-	protected abstract int getBreedingAge();
-
-	/**
 	 * Return whether an animal can breed. By default, An animal can breed if it has
 	 * reached the breeding age and met an adjacent animal of the same species with
 	 * opposite gender.
@@ -202,25 +139,44 @@ public abstract class Animal extends LivingThing {
 		if (age < getBreedingAge())
 			return false;
 
-		List<Object> adjacentObjects = field.adjacentObjects(location);
-		Iterator<Object> iterator = adjacentObjects.iterator();
-
-		while (iterator.hasNext()) {
-			Object object = (Object) iterator.next();
-			if (object == null)
-				continue;
-
-			Entity entity = (Entity) object;
-			if (entity.getClass() == this.getClass()) {
-				Gender thisGender = this.getGender();
-				Gender otherGender = ((Animal) entity).getGender();
-				if ((thisGender == Gender.FEMALE) && (otherGender == Gender.MALE)) {
-					return true;
-				}
-			}
+		if (this.getGender() == Gender.MALE) {
+			return field.adjacentObjects(location).stream().filter(obj -> obj instanceof Animal)
+					.map(obj -> (Animal) obj).anyMatch(animal -> animal.getGender() == Gender.FEMALE);
 		}
+
+		if (this.getGender() == Gender.FEMALE) {
+			return field.adjacentObjects(location).stream().filter(obj -> obj instanceof Animal)
+					.map(obj -> (Animal) obj).anyMatch(animal -> animal.getGender() == Gender.MALE);
+		}
+
 		return false;
 	}
+
+	/**
+	 * Create a new animal at location in field and infect the offspring if the
+	 * disease is spreadable.
+	 * 
+	 * @param location
+	 *            The location within the field.
+	 */
+	@Override
+	protected LivingThing createOffSpring(Location location) {
+		Animal animal = createAnimal(false, field, location);
+		diseases.stream().filter(Disease::affectsOffSpring).forEach(disease -> animal.getInfected(disease));
+		return animal;
+	}
+
+	/**
+	 * Create a new animal at location in field.
+	 * 
+	 * @param randomAge
+	 *            Determine whether the animal has a random age.
+	 * @param field
+	 *            The field currently occupied.
+	 * @param location
+	 *            The location within the field.
+	 */
+	abstract Animal createAnimal(boolean randomAge, Field field, Location location);
 
 	/**
 	 * Move to the location specified. Move to a random location if the givent
@@ -240,73 +196,74 @@ public abstract class Animal extends LivingThing {
 	}
 
 	/**
+	 * Return whether an animal can move when acting.
+	 * 
+	 * @param timeOfDay
+	 *            The current time of the day.
+	 * @param weather
+	 *            The current weather conditions.
+	 * 
+	 * @return true if an animal can move.
+	 */
+
+	public boolean canMove(TimeOfDay timeOfDay, Weather weather) {
+		return true;
+	}
+
+	/**
 	 * Look for food in the adjacent locations to the current location.
 	 * 
 	 * @return food if found, null otherwise.
 	 */
-	protected Food findFood() {
-		Field field = getField();
-		// Adjacent locations
-		List<Object> adjacentObjects = field.adjacentObjects(getLocation());
-		// Iterate through adjacent locations
-		Iterator<Object> it = adjacentObjects.iterator();
-		while (it.hasNext()) {
-			Object object = it.next(); // An adjacent location
-			if (isFood(object))
-				return (Food) object;
-		}
-		return null;
+	protected void findFood() {
+		Food food = field.adjacentObjects(location).stream().filter(obj -> obj instanceof Food).map(obj -> (Food) obj)
+				.filter(this::isFood).findFirst().orElse(null);
+		
+		if (food == null) return;
+		
+		eat(food);
+		move(food.getLocation());
 	}
 
 	/**
-	 * Return the food sources of an animal (classes which an animal can 'eat').
-	 * 
-	 * @return  the food sources of an animal.
-	 */
-	public abstract Class[] getFoodSources();
-
-	/**
-	 * Determine whether the given object is a food source of an animal.
+	 * Determine whether the given food is a food source of an animal.
 	 * 
 	 * @param object
 	 *            Object to be inspected.
 	 * @return true if the object is a food source.
 	 */
-	protected boolean isFood(Object object) {
-		if (object == null)
-			return false;
-		Class[] foodSources = getFoodSources();
-		for (int i = 0; i < foodSources.length; i++) {
-			if (foodSources[i] == object.getClass()) {
-				Food food = (Food) object;
-				eat(food);
-				return true;
-			}
-		}
-		return false;
+	protected boolean isFood(Food food) {
+		Class foodClass = food.getClass();
+		return Arrays.stream(getFoodSources()).anyMatch(foodClass::equals);
+	}
+
+	/**
+	 * Eat the specified food and make this animal less hungry.
+	 * 
+	 * @param food
+	 *            The food to be eaten.
+	 */
+	public void eat(Food food) {
+		food.getEaten();
+		foodLevel = food.getFoodValue();
 	}
 
 	/**
 	 * Spread the diseases carried by an animal to other animals.
-	 * 
 	 */
 	public void spreadDiseases() {
-		Location location = getLocation();
-		if (location != null) {
-			List<Object> adjacentObjects = field.adjacentObjects(location);
-			Iterator<Object> iterator = adjacentObjects.iterator();
+		if (location == null) return;
+		field.adjacentObjects(location).stream().filter(obj -> obj instanceof Animal).map(obj -> (Animal) obj)
+				.forEach(animal -> animal.getInfected(this.getDiseases()));
+	}
 
-			while (iterator.hasNext()) {
-				Object object = (Object) iterator.next();
-				if (object == null)
-					continue;
-
-				Entity entity = (Entity) object;
-				if (entity.getClass() == this.getClass()) {
-					((Animal) entity).addDiseases(this.getDiseases());
-					this.addDiseases(this.getDiseases());
-				}
-			}
+	/**
+	 * Allow the diseases to take effect when an animal is acting.
+	 * 
+	 */
+	protected void applyDiseases() {
+		for (Disease disease : diseases) {
+			disease.affect(this);
 		}
 	}
 
@@ -325,7 +282,7 @@ public abstract class Animal extends LivingThing {
 	 * @param diseases
 	 *            Diseases which will infect the animal.
 	 */
-	public void addDiseases(Set<Disease> diseases) {
+	public void getInfected(Set<Disease> diseases) {
 		diseases.addAll(diseases);
 	}
 
@@ -337,17 +294,6 @@ public abstract class Animal extends LivingThing {
 	 */
 	public void getInfected(Disease disease) {
 		diseases.add(disease.newDiseaseInstance());
-	}
-
-	/**
-	 * Eat the specified food and make this animal less hungry.
-	 * 
-	 * @param food
-	 *            The food to be eaten.
-	 */
-	public void eat(Food food) {
-		food.getEaten();
-		foodLevel = food.getFoodValue();
 	}
 
 	/**
@@ -367,14 +313,20 @@ public abstract class Animal extends LivingThing {
 	}
 
 	/**
-	 * Allow the diseases to take effect when an animal is acting.
+	 * Return the gender of an animal.
 	 * 
+	 * @return the gender of an animal.
 	 */
-	protected void applyDiseases() {
-		for (Disease disease : diseases) {
-			disease.affect(this);
-		}
+	public Gender getGender() {
+		return gender;
 	}
+
+	/**
+	 * Return the breeding age of an animal.
+	 * 
+	 * @return the breeding age of an animal.
+	 */
+	protected abstract int getBreedingAge();
 
 	/**
 	 * Return the maximum age of an animal.
@@ -382,7 +334,7 @@ public abstract class Animal extends LivingThing {
 	 * @return the maximum age of an animal.
 	 */
 	protected abstract int getMaxAge();
-	
+
 	/**
 	 * Return the initial food level of an animal.
 	 * 
@@ -390,5 +342,11 @@ public abstract class Animal extends LivingThing {
 	 */
 	protected abstract int getInitialFoodLevel();
 
+	/**
+	 * Return the food sources of an animal (classes which an animal can 'eat').
+	 * 
+	 * @return the food sources of an animal.
+	 */
+	public abstract Class[] getFoodSources();
 
 }

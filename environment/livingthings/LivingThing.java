@@ -69,7 +69,7 @@ public abstract class LivingThing extends Entity {
 	 * @param newAnimals A list to return newly added living things
 	 */
 	protected void reproduce(List<LivingThing> newLivingThings) {
-		// New Living Things are born into adjacent locations.
+		// New foxes are born into adjacent locations.
 		// Get a list of adjacent free locations.
 		Field field = getField();
 		List<Location> free = field.getFreeAdjacentLocations(getLocation());
@@ -89,7 +89,7 @@ public abstract class LivingThing extends Entity {
 	private int breed() {
 		int births = 0;
 		if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-			births = rand.nextInt(getMaxLitterSize()) + 1; 
+			births = rand.nextInt(getMaxLitterSize()) + 1;
 		}
 		return births;
 	}

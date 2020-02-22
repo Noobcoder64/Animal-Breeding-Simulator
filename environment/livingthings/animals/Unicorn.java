@@ -1,9 +1,5 @@
 package environment.livingthings.animals;
 
-
-
-
-
 import environment.livingthings.animals.properties.Herbivore;
 import environment.livingthings.animals.properties.Prey;
 import environment.livingthings.plants.Plant;
@@ -32,12 +28,10 @@ public class Unicorn extends Animal implements Prey, Herbivore {
 	private static final int MAX_LITTER_SIZE = 8;
 
 	// The initial food level of a unicorn.
-	private static final int INITIAL_FOOD_LEVEL = 30;
+	private static final int INITIAL_FOOD_LEVEL = 0;
 
 	// The food value of a unicorn when eaten.
 	public static final int FOOD_VALUE = 10;
-
-
 
 	// The food sources of a unicorn.
 	private static final Class[] foodSources = { Plant.class };
@@ -119,6 +113,14 @@ public class Unicorn extends Animal implements Prey, Herbivore {
 	@Override
 	protected int getInitialFoodLevel() {
 		return INITIAL_FOOD_LEVEL;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void getEaten() {
+		setDead();
 	}
 
 }

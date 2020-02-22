@@ -59,7 +59,7 @@ public class WereWolf extends Animal implements Predator {
 	@Override
 	public void act(TimeOfDay timeOfDay, Weather weather, List<LivingThing> newAnimals) {
 		updateStrength(timeOfDay);
-		compete();
+		//compete();
 		super.act(timeOfDay, weather, newAnimals);
 
 	}
@@ -140,6 +140,16 @@ public class WereWolf extends Animal implements Predator {
 	@Override
 	protected int getInitialFoodLevel() {
 		return INITIAL_FOOD_LEVEL;
+	}
+	
+	/**
+	 * {@inheritDoc} No mate required.
+	 */
+	@Override
+	protected boolean canBreed() {
+		if (age < BREEDING_AGE)
+			return false;
+		return true;
 	}
 
 }

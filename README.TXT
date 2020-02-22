@@ -1,5 +1,5 @@
 Project: foxes-and-rabbits-v2
-Authors: Fahim Ahmed (k1921959), Amit Setty (k1923164), Michael Kölling and David J. Barnes
+Authors: Michael Kölling and David J. Barnes
 
 This project is part of the material for chapter 10 of the book
 
@@ -8,7 +8,11 @@ This project is part of the material for chapter 10 of the book
    David J. Barnes and Michael Kölling
    Pearson Education, 2016
 
-Since the original application this simulation has been extended to show more species and better show good Java practices
+A predator-prey simulation involving foxes and rabbits in
+an enclosed rectangular field.
+
+This is the first version of the simulation. This version
+does not use inheritance.
 
 How to start:
     Create a Simulator object.

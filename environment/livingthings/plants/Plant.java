@@ -84,4 +84,9 @@ public class Plant extends LivingThing implements Food {
 		return 3;
 	}
 
+	@Override
+	public void getEaten() {
+		setDead();
+	}
+
 }

@@ -16,7 +16,6 @@ import simulator.field.entity.Location;
  * @author Fahim Ahmed (k1921959), Amit Setty (k1923164)
  * @version 2019.02.20
  */
-
 public class Serpent extends Animal implements Predator {
 	// Characteristics shared by all serpents (class variables).
 

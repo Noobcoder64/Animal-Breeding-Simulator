@@ -1,14 +1,14 @@
 package environment.livingthings.animals;
 
 import java.util.List;
-
+import java.util.Random;
 
 import environment.livingthings.Food;
 import environment.livingthings.LivingThing;
 import environment.livingthings.animals.properties.Predator;
 import environment.time.TimeOfDay;
 import environment.weather.Weather;
-
+import simulator.Randomizer;
 import simulator.field.Field;
 import simulator.field.entity.Location;
 
@@ -19,7 +19,6 @@ import simulator.field.entity.Location;
  * @author Fahim Ahmed (k1921959), Amit Setty (k1923164)
  * @version 2019.02.20
  */
-
 public class Cerberus extends Animal implements Predator {
 	// Characteristics shared by all cerberuses (class variables).
 
@@ -28,7 +27,7 @@ public class Cerberus extends Animal implements Predator {
 	// The age to which a cerberus can live.
 	private static final int MAX_AGE = 120; // 80
 	// The likelihood of a cerberus breeding.
-	private static final double BREEDING_PROBABILITY = 0.2; // 0.08
+	private static final double BREEDING_PROBABILITY = 0.08; // 0.08
 	// The maximum number of births.
 	private static final int MAX_LITTER_SIZE = 4; // 2
 
@@ -38,6 +37,8 @@ public class Cerberus extends Animal implements Predator {
 	// The strength value of a cerberus (used when competing with other predators).
 	private static final int STRENGTH = 10;
 
+	// A shared random number generator to control breeding.
+	private static final Random rand = Randomizer.getRandom();
 
 	// The food sources of a cerberus.
 	private static final Class[] foodSources = { Phoenix.class };
@@ -62,25 +63,18 @@ public class Cerberus extends Animal implements Predator {
 	 */
 	@Override
 	public void act(TimeOfDay timeOfDay, Weather weather, List<LivingThing> newAnimals) {
-		/*
-		 * Increment Age Increment Hunger Reproduce Find Food Eat Food Move
-		 */
-		compete();
+		//compete();
+		
 		super.act(timeOfDay, weather, newAnimals);
 
 		// this allows the Cerberus to try to eat two more times - this is a unique part
 		// of the Cerberus act procedure.
 		Location newLocation = null;
+		
 		for (int i = 0; i < 2; i++) {
 			if (!isAlive())
 				return;
-			Food food = findFood();
-
-			if (!(food == null))
-				newLocation = food.getLocation();
-			// Move towards a source of food if found.
-
-			move(newLocation);
+			findFood();
 		}
 	}
 
@@ -140,4 +134,14 @@ public class Cerberus extends Animal implements Predator {
 		return INITIAL_FOOD_LEVEL;
 	}
 
+	/**
+	 * {@inheritDoc} No mate required.
+	 */
+	@Override
+	protected boolean canBreed() {
+		if (age < BREEDING_AGE)
+			return false;
+		return true;
+	}
+	
 }
