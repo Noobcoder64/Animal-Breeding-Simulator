@@ -17,100 +17,129 @@ import simulator.field.entity.Location;
  * @version 2019.02.20
  */
 public class WereWolf extends Animal implements Predator {
-	// Characteristics shared by all foxes (class variables).
+	// Characteristics shared by all werewolves (class variables).
 
-	// The age at which a fox can start to breed.
+	// The age at which a werewolf can start to breed.
 	private static final int BREEDING_AGE = 5; // 15
-	// The age to which a fox can live.
+	// The age to which a werewolf can live.
 	private static final int MAX_AGE = 150; // 150
-	// The likelihood of a fox breeding.
+	// The likelihood of a werewolf breeding.
 	private static final double BREEDING_PROBABILITY = 0.08; // 0.08
 	// The maximum number of births.
 	private static final int MAX_LITTER_SIZE = 2; // 2
-	// The food value of a single rabbit. In effect, this is the
-	// number of steps a fox can go before it has to eat again.
-	// private static final int RABBIT_FOOD_VALUE = 9;
-	private static final int FOOD_LEVEL = 20;
+
+	// The initial food level of a werewolf.
+	private static final int INITIAL_FOOD_LEVEL = 20;
+
+	// The strength value of a werewolf at day time (used when competing with other
+	// predators).
 	private static final int DAY_STRENGTH = 5;
+
+	// The strength value of a werewolf at night time (used when competing with
+	// other predators).
 	private static final int NIGHT_STRENGTH = 15;
+
+	// The current strenght value of a werewolf (static because all wolves will have
+	// the same strength)
 	private static int currentStrength;
 
+	// The food sources of a wolf.
 	private static final Class[] foodSources = { Phoenix.class };
 
 	/**
-	 * Create a fox. A fox can be created as a new born (age zero and not hungry) or
-	 * with a random age and food level.
-	 * 
-	 * @param randomAge If true, the fox will have random age and hunger level.
-	 * @param field     The field currently occupied.
-	 * @param location  The location within the field.
+	 * {@inheritDoc}
 	 */
 	public WereWolf(boolean randomAge, Field field, Location location) {
 		super(randomAge, field, location);
-		foodLevel = FOOD_LEVEL;
 	}
 
 	/**
-	 * This is what the fox does most of the time: it hunts for rabbits. In the
-	 * process, it might breed, die of hunger, or die of old age.
-	 * 
-	 * @param field    The field currently occupied.
-	 * @param newFoxes A list to return newly born foxes.
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void act(TimeOfDay timeOfDay, Weather weather, List<LivingThing> newAnimals) {
-		/*
-		 * Increment Age Increment Hunger Reproduce Find Food Eat Food Move
-		 */
-
-		this.compete();
-
-		super.act(timeOfDay, weather, newAnimals);
 		updateStrength(timeOfDay);
+		compete();
+		super.act(timeOfDay, weather, newAnimals);
+
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getStrength() {
 		return currentStrength;
 	}
 
+	/**
+	 * Makes a werewolf stronger during the night.
+	 * 
+	 * @param timeOfDay
+	 *            The current time of the day
+	 */
 	public void updateStrength(TimeOfDay timeOfDay) {
 		if (timeOfDay == TimeOfDay.NIGHT) {
 			currentStrength = NIGHT_STRENGTH;
-
 		} else {
 			currentStrength = DAY_STRENGTH;
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected double getBreedingProbability() {
 		return BREEDING_PROBABILITY;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getMaxLitterSize() {
 		return MAX_LITTER_SIZE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public WereWolf createAnimal(boolean randomAge, Field field, Location location) {
 		return new WereWolf(randomAge, field, location);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected int getMaxAge() {
 		return MAX_AGE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Class[] getFoodSources() {
 		return foodSources;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected int getBreedingAge() {
 		return BREEDING_AGE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected int getInitialFoodLevel() {
+		return INITIAL_FOOD_LEVEL;
 	}
 
 }

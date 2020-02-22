@@ -25,40 +25,75 @@ import simulator.field.entity.Location;
  */
 public abstract class Animal extends LivingThing {
 	// Individual characteristics (instance fields).
-	// The fox's age.
+
+	// The animal's age.
 	protected int age;
-	// The fox's food level, which is increased by eating rabbits.
+	// The animal's food level, which is increased by eating rabbits.
 	protected int foodLevel;
 
+	// The animal's gender.
 	protected Gender gender;
 
+	// The diseases that an animal carries.
 	protected Set<Disease> diseases;
 
 	/**
-	 * Create a new animal at location in field.
+	 * Create a new animal at location in field. An animal may be created with age zero (a new born) or
+	 * with a random age. An animal may be Male or Female.
 	 * 
-	 * @param field    The field currently occupied.
-	 * @param location The location within the field.
+	 * @param randomAge
+	 *            Determine whether the animal has a random age.
+	 * @param field
+	 *            The field currently occupied.
+	 * @param location
+	 *            The location within the field.
 	 */
 	public Animal(boolean randomAge, Field field, Location location) {
 		super(field, location);
+
 		if (randomAge) {
 			age = rand.nextInt(getMaxAge());
-			foodLevel = rand.nextInt(Unicorn.FOOD_VALUE);
 		} else {
 			age = 0;
-			foodLevel = 10;
 		}
+
+		foodLevel = getInitialFoodLevel();
+		
+		// Determine whether the animal will be a MALE or a FEMALE.
 		gender = rand.nextBoolean() ? Gender.MALE : Gender.FEMALE;
+
 		diseases = new HashSet<>();
 	}
 
+
+	/**
+	 * Return the gender of an animal.
+	 * 
+	 * @return the gender of an animal.
+	 */
 	public Gender getGender() {
 		return gender;
 	}
 
+	/**
+	 * Create a new animal at location in field.
+	 * 
+	 * @param randomAge
+	 *            Determine whether the animal has a random age.
+	 * @param field
+	 *            The field currently occupied.
+	 * @param location
+	 *            The location within the field.
+	 */
 	abstract Animal createAnimal(boolean randomAge, Field field, Location location);
 
+	/**
+	 * Create a new animal at location in field and infect the offspring if the
+	 * disease is spreadable.
+	 * 
+	 * @param location
+	 *            The location within the field.
+	 */
 	@Override
 	protected LivingThing createOffSpring(Location location) {
 		Animal animal = createAnimal(false, field, location);
@@ -71,11 +106,19 @@ public abstract class Animal extends LivingThing {
 	}
 
 	/**
-	 * This is what the fox does most of the time: it hunts for rabbits. In the
-	 * process, it might breed, die of hunger, or die of old age.
+	 * This is what the animal does most of the time: it seeks for food. In the
+	 * process, it might breed, die for diseases, die of hunger, die of old age and
+	 * finally move. The actions of an animal depend on the time of the day and the
+	 * weather.
 	 * 
-	 * @param field      The field currently occupied.
-	 * @param newAnimals A list to return newly born foxes.
+	 * @param timeOfDay
+	 *            The current time of the day.
+	 * @param weather
+	 *            The current weather conditions.
+	 * @param field
+	 *            The field currently occupied.
+	 * @param newAnimals
+	 *            A list to return newly born foxes.
 	 */
 	@Override
 	public void act(TimeOfDay timeOfDay, Weather weather, List<LivingThing> newAnimals) {
@@ -105,12 +148,23 @@ public abstract class Animal extends LivingThing {
 		}
 	}
 
+	/**
+	 * Return whether an animal can move when acting.
+	 * 
+	 * @param timeOfDay
+	 *            The current time of the day.
+	 * @param weather
+	 *            The current weather conditions.
+	 * 
+	 * @return true if an animal can move.
+	 */
+
 	public boolean canMove(TimeOfDay timeOfDay, Weather weather) {
 		return true;
 	}
 
 	/**
-	 * Increase the age. This could result in the fox's death.
+	 * Increase the age. This could result in the animal's death.
 	 */
 	protected void incrementAge() {
 		age++;
@@ -120,7 +174,7 @@ public abstract class Animal extends LivingThing {
 	}
 
 	/**
-	 * Make this fox more hungry. This could result in the fox's death.
+	 * Make this animal more hungry. This could result in the animal's death.
 	 */
 	protected void incrementHunger() {
 		foodLevel--;
@@ -130,12 +184,19 @@ public abstract class Animal extends LivingThing {
 		}
 	}
 
+	/**
+	 * Return the breeding age of an animal.
+	 * 
+	 * @return the breeding age of an animal.
+	 */
 	protected abstract int getBreedingAge();
 
 	/**
-	 * A rabbit can breed if it has reached the breeding age.
+	 * Return whether an animal can breed. By default, An animal can breed if it has
+	 * reached the breeding age and met an adjacent animal of the same species with
+	 * opposite gender.
 	 * 
-	 * @return true if the rabbit can breed, false otherwise.
+	 * @return true if the animal can breed.
 	 */
 	protected boolean canBreed() {
 		if (age < getBreedingAge())
@@ -161,6 +222,13 @@ public abstract class Animal extends LivingThing {
 		return false;
 	}
 
+	/**
+	 * Move to the location specified. Move to a random location if the givent
+	 * location is null. Die for overcrowding if no adjacent location is available.
+	 * 
+	 * @param newLocation
+	 *            The location in which the animal should move.
+	 */
 	protected void move(Location newLocation) {
 		if (newLocation == null)
 			newLocation = field.freeAdjacentLocation(location);
@@ -172,10 +240,9 @@ public abstract class Animal extends LivingThing {
 	}
 
 	/**
-	 * Look for rabbits adjacent to the current location. Only the first live rabbit
-	 * is eaten.
+	 * Look for food in the adjacent locations to the current location.
 	 * 
-	 * @return Where food was found, or null if it wasn't.
+	 * @return food if found, null otherwise.
 	 */
 	protected Food findFood() {
 		Field field = getField();
@@ -191,8 +258,20 @@ public abstract class Animal extends LivingThing {
 		return null;
 	}
 
+	/**
+	 * Return the food sources of an animal (classes which an animal can 'eat').
+	 * 
+	 * @return  the food sources of an animal.
+	 */
 	public abstract Class[] getFoodSources();
 
+	/**
+	 * Determine whether the given object is a food source of an animal.
+	 * 
+	 * @param object
+	 *            Object to be inspected.
+	 * @return true if the object is a food source.
+	 */
 	protected boolean isFood(Object object) {
 		if (object == null)
 			return false;
@@ -207,6 +286,10 @@ public abstract class Animal extends LivingThing {
 		return false;
 	}
 
+	/**
+	 * Spread the diseases carried by an animal to other animals.
+	 * 
+	 */
 	public void spreadDiseases() {
 		Location location = getLocation();
 		if (location != null) {
@@ -227,37 +310,85 @@ public abstract class Animal extends LivingThing {
 		}
 	}
 
+	/**
+	 * Return the diseases carried by an animal
+	 * 
+	 * @return the diseases carried by an animal
+	 */
 	public Set<Disease> getDiseases() {
 		return diseases;
 	}
 
+	/**
+	 * Infect an animal with multiple diseases.
+	 * 
+	 * @param diseases
+	 *            Diseases which will infect the animal.
+	 */
 	public void addDiseases(Set<Disease> diseases) {
 		diseases.addAll(diseases);
 	}
 
+	/**
+	 * Infect an animal a disease.
+	 * 
+	 * @param diseases
+	 *            Disease which will infect the animal.
+	 */
 	public void getInfected(Disease disease) {
 		diseases.add(disease.newDiseaseInstance());
 	}
 
+	/**
+	 * Eat the specified food and make this animal less hungry.
+	 * 
+	 * @param food
+	 *            The food to be eaten.
+	 */
 	public void eat(Food food) {
 		food.getEaten();
 		foodLevel = food.getFoodValue();
 	}
 
+	/**
+	 * Cure an animal from all the diseases
+	 */
 	public void getCuredCompletely() {
 		diseases.clear();
 	}
 
+	/**
+	 * Cure an animal from one disease
+	 * 
+	 * @param disease
+	 */
 	public void getCured(Disease disease) {
 		diseases.remove(disease);
 	}
 
+	/**
+	 * Allow the diseases to take effect when an animal is acting.
+	 * 
+	 */
 	protected void applyDiseases() {
 		for (Disease disease : diseases) {
 			disease.affect(this);
 		}
 	}
 
+	/**
+	 * Return the maximum age of an animal.
+	 * 
+	 * @return the maximum age of an animal.
+	 */
 	protected abstract int getMaxAge();
+	
+	/**
+	 * Return the initial food level of an animal.
+	 * 
+	 * @return the initial food level of an animal.
+	 */
+	protected abstract int getInitialFoodLevel();
+
 
 }

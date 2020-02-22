@@ -16,70 +16,62 @@ import simulator.field.entity.Location;
  * @author Fahim Ahmed (k1921959), Amit Setty (k1923164)
  * @version 2019.02.20
  */
-public class Serpent extends Animal implements Predator {
-	// Characteristics shared by all foxes (class variables).
 
-	// The age at which a fox can start to breed.
+public class Serpent extends Animal implements Predator {
+	// Characteristics shared by all serpents (class variables).
+
+	// The age at which a serpent can start to breed.
 	private static final int BREEDING_AGE = 15; // 15
-	// The age to which a fox can live.
+	// The age to which a serpent can live.
 	private static final int MAX_AGE = 150; // 150
-	// The likelihood of a fox breeding.
+	// The likelihood of a serpent breeding.
 	private static final double BREEDING_PROBABILITY = 0.08; // 0.08
 	// The maximum number of births.
 	private static final int MAX_LITTER_SIZE = 2; // 2
-	// The food value of a single rabbit. In effect, this is the
-	// number of steps a fox can go before it has to eat again.
-	// private static final int RABBIT_FOOD_VALUE = 9;
-	private static final int FOOD_LEVEL = 12;
+
+	// The initial food level of a serpent.
+	private static final int INITIAL_FOOD_LEVEL = 12;
+
+	// The strength value of a serpent (used when competing with other predators).
 	private static final int STRENGTH = 20;
 
+	// The food sources of a serpent.
 	private static final Class[] foodSources = { Unicorn.class };
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Serpent(boolean randomAge, Field field, Location location) {
 		super(randomAge, field, location);
-		foodLevel = FOOD_LEVEL;
 	}
 
 	/**
-	 * This is what the fox does most of the time: it hunts for rabbits. In the
-	 * process, it might breed, die of hunger, or die of old age.
-	 * 
-	 * @param field    The field currently occupied.
-	 * @param newFoxes A list to return newly born foxes.
+	 * {@inheritDoc}
 	 */
-
 	@Override
 	public void act(TimeOfDay timeOfDay, Weather weather, List<LivingThing> newAnimals) {
-		/*
-		 * Increment Age Increment Hunger Reproduce Find Food Eat Food Move
-		 */
-		this.compete();
-		if (weather.isRaining()) {
-			super.act(timeOfDay, weather, newAnimals);
-		} else {
-			applyDiseases();
-			incrementAge();
-			incrementHunger();
-
-			if (!isAlive())
-				return;
-			reproduce(newAnimals);
-		}
-
+		compete();
+		super.act(timeOfDay, weather, newAnimals);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getStrength() {
 		return STRENGTH;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected int getMaxAge() {
 		return MAX_AGE;
 	}
 
 	/**
-	 * A fox can breed if it has reached the breeding age.
+	 * {@inheritDoc} No mate required.
 	 */
 	@Override
 	protected boolean canBreed() {
@@ -88,29 +80,59 @@ public class Serpent extends Animal implements Predator {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Serpent createAnimal(boolean randomAge, Field field, Location location) {
 		return new Serpent(randomAge, field, location);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected double getBreedingProbability() {
 		return BREEDING_PROBABILITY;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getMaxLitterSize() {
 		return MAX_LITTER_SIZE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Class[] getFoodSources() {
 		return foodSources;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected int getBreedingAge() {
 		return BREEDING_AGE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean canMove(TimeOfDay timeOfDay, Weather weather) {
+		return !weather.isRaining();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected int getInitialFoodLevel() {
+		return INITIAL_FOOD_LEVEL;
+	}
 }

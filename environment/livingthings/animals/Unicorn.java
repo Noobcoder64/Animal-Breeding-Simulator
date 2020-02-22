@@ -23,81 +23,106 @@ import simulator.field.entity.Location;
  * @version 2019.02.20
  */
 public class Unicorn extends Animal implements Prey, Herbivore {
-	// Characteristics shared by all rabbits (class variables).
+	// Characteristics shared by all unicorns (class variables).
 
-	// The age at which a rabbit can start to breed.
+	// The age at which a unicorn can start to breed.
 	private static final int BREEDING_AGE = 5;
-	// The age to which a rabbit can live.
+	// The age to which a unicorn can live.
 	private static final int MAX_AGE = 60;
-	// The likelihood of a rabbit breeding.
+	// The likelihood of a unicorn breeding.
 	private static final double BREEDING_PROBABILITY = 0.12; // 0.12
 	// The maximum number of births.
 	private static final int MAX_LITTER_SIZE = 8;
-	// A shared random number generator to control breeding.
-	private static final int FOOD_LEVEL = 30;
+
+	// The initial food level of a unicorn.
+	private static final int INITIAL_FOOD_LEVEL = 30;
+
+	// The food value of a unicorn when eaten.
 	public static final int FOOD_VALUE = 10;
 
+	// A shared random number generator to control breeding.
 	private static final Random rand = Randomizer.getRandom();
 
+	// The food sources of a unicorn.
 	private static final Class[] foodSources = { Plant.class };
 
-	// Individual characteristics (instance fields).
-
 	/**
-	 * Create a new rabbit. A rabbit may be created with age zero (a new born) or
-	 * with a random age.
-	 * 
-	 * @param randomAge If true, the rabbit will have a random age.
-	 * @param field     The field currently occupied.
-	 * @param location  The location within the field.
+	 * {@inheritDoc}
 	 */
 	public Unicorn(boolean randomAge, Field field, Location location) {
 		super(randomAge, field, location);
-		age = 0;
-		if (randomAge) {
-			age = rand.nextInt(MAX_AGE);
-		}
-		foodLevel = FOOD_LEVEL;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Class[] getFoodSources() {
 		return foodSources;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getFoodValue() {
 		return FOOD_VALUE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Unicorn createAnimal(boolean randomAge, Field field, Location location) {
 		return new Unicorn(randomAge, field, location);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected double getBreedingProbability() {
 		return BREEDING_PROBABILITY;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected int getBreedingAge() {
 		return BREEDING_AGE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected int getMaxLitterSize() {
 		return MAX_LITTER_SIZE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected int getMaxAge() {
 		return MAX_AGE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean canMove(TimeOfDay timeOfDay, Weather weather) {
 		return !weather.isRaining();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected int getInitialFoodLevel() {
+		return INITIAL_FOOD_LEVEL;
 	}
 
 }
